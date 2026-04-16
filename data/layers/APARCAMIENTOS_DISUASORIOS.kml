@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Aparcamientos Disuasorios</name>
+    <Style id="parkingIcon">
+      <IconStyle>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/shapes/parking_lot.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <Placemark>
+      <name>Avenida Rosalía de Castro (O Carril)</name>
+      <styleUrl>#parkingIcon</styleUrl>
+      <Point><coordinates>-8.772259,42.612603</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Rúa Mulatas (O Carril)</name>
+      <styleUrl>#parkingIcon</styleUrl>
+      <Point><coordinates>-8.76452,42.603206</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Rúa Aquilino Iglesias Alvariño nº10 (Vilagarcía)</name>
+      <styleUrl>#parkingIcon</styleUrl>
+      <Point><coordinates>-8.761737,42.596988</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Praza Xoán XXIII</name>
+      <styleUrl>#parkingIcon</styleUrl>
+      <Point><coordinates>-8.762948,42.597121</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Doutor Fleming (Vilagarcía)</name>
+      <styleUrl>#parkingIcon</styleUrl>
+      <Point><coordinates>-8.761788,42.595571</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Avda. Rodrigo de Mendoza (Vilagarcía)</name>
+      <styleUrl>#parkingIcon</styleUrl>
+      <Point><coordinates>-8.763986,42.59167</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Finca do Ouro, Avda. Rodrigo de Mendoza (Vilagarcía)</name>
+      <styleUrl>#parkingIcon</styleUrl>
+      <Point><coordinates>-8.760876,42.591624</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Rúa Bosque Desamparados (Vilagarcía)</name>
+      <styleUrl>#parkingIcon</styleUrl>
+      <Point><coordinates>-8.766181,42.589689</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Rúa Alfredo Brañas nº5 (O Piñeiriño)</name>
+      <styleUrl>#parkingIcon</styleUrl>
+      <Point><coordinates>-8.771933,42.586226</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Rúa Adolfo Pedrido Morla (O Piñeiriño)</name>
+      <styleUrl>#parkingIcon</styleUrl>
+      <Point><coordinates>-8.774656,42.585133</coordinates></Point>
+    </Placemark>
+  </Document>
+</kml>

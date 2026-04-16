@@ -1,0 +1,10 @@
+# Archivos de entorno (contienen claves secretas)
+.env
+.env.local
+.env.production
+
+# Dependencias
+node_modules/
+
+# Build
+dist/

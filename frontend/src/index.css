@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply m-0 p-0 font-sans bg-slate-50 text-slate-900 dark:bg-premium-900 dark:text-white overflow-hidden transition-colors duration-300;
+  }
+}
+
+/* Glassmorphism utilities */
+@layer components {
+  .glass-panel {
+    @apply bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-2xl transition-all duration-300;
+  }
+  
+  .glass-input {
+    @apply bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all text-slate-900 dark:text-white;
+  }
+  
+  .primary-btn {
+    @apply bg-accent hover:bg-accent-hover text-white rounded-lg transition-colors font-medium text-sm px-4 py-2 flex items-center justify-center shadow-lg;
+  }
+
+  .toggle-switch {
+    @apply relative inline-block w-10 h-6 outline-none rounded-full cursor-pointer transition-colors duration-300;
+  }
+  
+  .toggle-knob {
+    @apply absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm;
+  }
+}
+
+/* Custom Scrollbar for sleek look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/30;
+}
+
+.premium-map-label {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(164, 28, 58, 0.3);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #A41C3A;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    pointer-events: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+}
+
+.dark .premium-map-label {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* Remove default Leaflet tooltip style box */
+.leaflet-tooltip-pane .leaflet-popup-content-wrapper {
+    padding: 0 !important;
+    overflow: hidden;
+    border-radius: 12px !important;
+    background: #fdfbf7 !important; /* Blanco crema */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark .leaflet-popup-content-wrapper {
+    background: #fdfbf7 !important; /* Blanco crema consistent logic */
+    color: #1e293b !important;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-tooltip-pane .leaflet-tooltip-top::before,
+.leaflet-tooltip-pane .leaflet-tooltip-bottom::before,
+.leaflet-tooltip-pane .leaflet-tooltip-left::before,
+.leaflet-tooltip-pane .leaflet-tooltip-right::before {
+    display: none;
+}
+

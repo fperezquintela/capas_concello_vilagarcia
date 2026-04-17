@@ -761,11 +761,11 @@ const Map = ({ token, layers, activeLayers, geoJsonData, setGeoJsonData, focusFe
             />
           ))}
 
-          {/* IGN Base layer from Spain's National Geographic Institute */}
+          {/* IGN Base layer - proxied through backend to avoid Chrome CORS/PNA restrictions on HTTP */}
           {mapConfig.showIGN && (
             <TileLayer
               attribution='&copy; <a href="https://www.ign.es" target="_blank">Instituto Geográfico Nacional de España</a>'
-              url="https://www.ign.es/wmts/ign-base?layer=IGNBaseTodo&style=default&tilematrixset=GoogleMapsCompatible&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix={z}&TileCol={x}&TileRow={y}"
+              url={`${import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3001/api`}/ign-proxy/{z}/{x}/{y}`}
               maxZoom={20}
               opacity={1}
             />

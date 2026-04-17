@@ -4,6 +4,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
+const https = require('https');
 const path = require('path');
 const multer = require('multer');
 const Database = require('better-sqlite3');
@@ -32,8 +33,8 @@ app.use(helmet({
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'"], // Leaflet needs inline styles
-            imgSrc: ["'self'", "data:", "blob:", "http://192.168.5.15:3001", "http://localhost:3001", "https://*.arcgisonline.com", "https://*.google.com", "https://*.googleapis.com", "https://*.gstatic.com"],
-            connectSrc: ["'self'", "http://192.168.5.15:3001", "http://localhost:3001", "http://localhost:5173"],
+            imgSrc: ["'self'", "data:", "blob:", "http://192.168.5.15:3001", "http://localhost:3001", "http://87.106.124.163:3001", "https://*.arcgisonline.com", "https://*.google.com", "https://*.googleapis.com", "https://*.gstatic.com", "https://*.ign.es", "https://www.ign.es"],
+            connectSrc: ["'self'", "http://192.168.5.15:3001", "http://localhost:3001", "http://localhost:5173", "http://87.106.124.163:3001", "http://87.106.124.163:5001"],
             frameSrc: ["'none'"],
         },
     },
@@ -57,7 +58,23 @@ const loginLimiter = rateLimit({
     message: { error: 'Demasiados intentos fallidos. Por favor, espera 15 minutos.' },
 });
 
-app.use('/api/', apiLimiter);
+// Limiter específico para el proxy de tiles IGN (muchas peticiones simultáneas)
+const ignTileLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 2000,
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// Caché de tiles IGN en memoria (evita re-fetch del mismo tile)
+const ignTileCache = new Map();
+const IGN_TILE_CACHE_MAX = 3000;
+
+app.use('/api/', (req, res, next) => {
+    // Excluir el proxy IGN del limiter general (tiene el suyo propio)
+    if (req.path.startsWith('/ign-proxy/')) return next();
+    apiLimiter(req, res, next);
+});
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -598,5 +615,51 @@ const reprojectGeometry = (geometry, from, to, proj4) => {
         geometry.coordinates = geometry.coordinates.map(poly => poly.map(ring => ring.map(c => proj4(from, to, c))));
     }
 };
+
+// --- IGN TILE PROXY ---
+// Resuelve el error "not a secure context" de Chrome al cargar tiles IGN desde HTTP.
+// El servidor pide las tiles a IGN (server-to-server, sin restricciones CORS) y las reenvía.
+app.get('/api/ign-proxy/:z/:x/:y', ignTileLimiter, (req, res) => {
+    const { z, x, y } = req.params;
+    const cacheKey = `${z}/${x}/${y}`;
+
+    if (ignTileCache.has(cacheKey)) {
+        res.set('Content-Type', 'image/jpeg');
+        res.set('Cache-Control', 'public, max-age=86400');
+        res.set('Access-Control-Allow-Origin', '*');
+        return res.send(ignTileCache.get(cacheKey));
+    }
+
+    const ignUrl = `https://www.ign.es/wmts/ign-base?layer=IGNBaseTodo&style=default&tilematrixset=GoogleMapsCompatible&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix=${z}&TileCol=${x}&TileRow=${y}`;
+
+    https.get(ignUrl, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; CapasVilagarcia/1.0)',
+            'Accept': 'image/jpeg,image/*,*/*',
+            'Referer': 'https://www.ign.es/'
+        }
+    }, (proxyRes) => {
+        if (proxyRes.statusCode !== 200) {
+            return res.status(proxyRes.statusCode).send('IGN tile error');
+        }
+        const chunks = [];
+        proxyRes.on('data', chunk => chunks.push(chunk));
+        proxyRes.on('end', () => {
+            const buffer = Buffer.concat(chunks);
+            if (ignTileCache.size >= IGN_TILE_CACHE_MAX) {
+                // Eliminar la entrada más antigua cuando se llena la caché
+                ignTileCache.delete(ignTileCache.keys().next().value);
+            }
+            ignTileCache.set(cacheKey, buffer);
+            res.set('Content-Type', proxyRes.headers['content-type'] || 'image/jpeg');
+            res.set('Cache-Control', 'public, max-age=86400');
+            res.set('Access-Control-Allow-Origin', '*');
+            res.send(buffer);
+        });
+    }).on('error', (err) => {
+        console.error('[IGN proxy]', err.message);
+        res.status(502).json({ error: 'Error obteniendo tile IGN' });
+    });
+});
 
 app.listen(port, () => console.log('Backend a punto en el puerto 3001'));
